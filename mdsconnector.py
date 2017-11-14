@@ -73,7 +73,18 @@ is an example on its use:
     >>> d5=d4.data()               ##### d5 is a numpy array on local host
 """
 
-    def __init__(self,host=None,python_executable='python'):
+    def __init__(self, host=None,
+                 user=None,
+                 port=None,
+                 keyfile=None,
+                 password=None,
+                 python_executable='python',
+                 hop=None,
+                 hop_user=None,
+                 hop_port=None,
+                 hop_keyfile=None,
+                 hop_password=None,
+                 hop_python_executable='python'):
         """mdsConnector constructor. Specify host to connect to a remote host via ssh or omit host or specify None to use local MDSplus objects. Specify the full path of the python executable on the remote host if python is not in the default path"""
         
         if host is None:
@@ -83,14 +94,22 @@ is an example on its use:
             self.connection=None
         else:
             self.local=False
-            self.mach=SshMachine(host)
+            self.mach=SshMachine(host,user=user,port=port,keyfile=keyfile,password=password)
             self.server=DeployedServer(self.mach,python_executable=python_executable)
             self.connection=self.server.classic_connect()
-            self.mdsplus=self.connection.modules['MDSplus']
+            if hop is None:
+                self.mdsplus=self.connection.modules['MDSplus']
+            else:
+                self.hop_connection=self.connection.modules['mdsconnector'].mdsConnector(hop,
+                                                                                         user=hop_user,
+                                                                                         port=hop_port,
+                                                                                         keyfile=hop_keyfile,
+                                                                                         password=hop_password)
+                self.mdsplus=self.hop_connection.mdsplus
 
     def __getattr__(self,name):
         if self.connection:
-            return mdsNetref(self.connection,self.mdsplus.__dict__[name])
+                return mdsNetref(self.connection,self.mdsplus.__dict__[name])
         else:
             return self.mdsplus.__dict__[name]
     
