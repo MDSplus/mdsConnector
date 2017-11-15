@@ -7,21 +7,16 @@ class mdsNetref(object):
         self.connection=connection
         self.obj=obj
 
-    def __getattribute__(self,name):
-        if name in ('__call__','connection','obj','fixArgsAndKwargs','__repr__','__str__'):
-            return object.__getattribute__(self,name)
+    def __getattr__(self,name):
+        ans=self.obj.__getattr__(name)
+        if isinstance(ans,rpyc.core.netref.BaseNetref): 
+            return mdsNetref(self.connection,ans)
         else:
-            ans=self.obj.__getattribute__(name)
-            if isinstance(ans,rpyc.core.netref.BaseNetref): 
-                return mdsNetref(object.__getattribute__(self,'connection'),ans)
-            else:
-                return ans
+            return ans
 
-    def __repr__(self):
-        return self.obj.__repr__()
+    def __repr__(self): return self.obj.__repr__()
 
-    def __str__(self):
-        return self.obj.__str__()
+    def __str__(self):  return self.obj.__str__()
                 
 
 
@@ -42,7 +37,7 @@ class mdsNetref(object):
         if self.connection:
             args,kwargs = self.fixArgsAndKwargs(args,kwargs)
         ans=self.obj(*args,**kwargs)
-        if 'ndarray' in str(type(ans)):
+        if 'numpy' in str(type(ans)):
             return rpyc.utils.classic.obtain(ans)
         elif isinstance(ans,rpyc.core.netref.BaseNetref):
             return mdsNetref(self.connection,self.obj(*args,**kwargs))
@@ -104,7 +99,8 @@ is an example on its use:
                                                                                          user=hop_user,
                                                                                          port=hop_port,
                                                                                          keyfile=hop_keyfile,
-                                                                                         password=hop_password)
+                                                                                         password=hop_password,
+                                                                                         python_executable=hop_python_executable)
                 self.mdsplus=self.hop_connection.mdsplus
 
     def __getattr__(self,name):
