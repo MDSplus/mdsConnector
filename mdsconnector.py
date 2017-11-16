@@ -1,16 +1,17 @@
 from rpyc.utils.zerodeploy import DeployedServer
 from plumbum import SshMachine
 import rpyc
+import dill
 
 class mdsNetref(object):
-    def __init__(self,connection,obj):
-        self.connection=connection
+    def __init__(self,connector,obj):
+        self.connector=connector
         self.obj=obj
 
     def __getattr__(self,name):
         ans=self.obj.__getattr__(name)
         if isinstance(ans,rpyc.core.netref.BaseNetref): 
-            return mdsNetref(self.connection,ans)
+            return mdsNetref(self.connector,ans)
         else:
             return ans
 
@@ -18,31 +19,43 @@ class mdsNetref(object):
 
     def __str__(self):  return self.obj.__str__()
                 
+    def deliver(self,arg):
+        if self.connector.connection and 'numpy' in str(type(arg)):
+            if self.connector.dill:
+                ans = self.connector.dill.loads(dill.dumps(arg))
+            else:
+                ans = rpyc.utils.classic.deliver(self.connector.connection,arg)
+        else:
+            ans = arg
+        return ans
 
+    def obtain(self,arg):
+        if self.connector.connection and 'numpy' in str(type(arg)):
+            if self.connector.dill:
+                ans = dill.loads(self.connector.dill.dumps(arg))
+            else:
+                ans = rpyc.utils.classic.obtain(arg)
+        else:
+            ans = arg
+        return ans
 
     def fixArgsAndKwargs(self,args,kwargs):
         import numpy
         l_args=list(args)
         for idx in range(len(l_args)):
-            arg=l_args[idx]
-            if isinstance(arg,numpy.ndarray):
-                l_args[idx] = rpyc.utils.classic.deliver(self.connection,arg)
+            l_args[idx] = self.deliver(l_args[idx])
         args=tuple(l_args)
         for key,value in kwargs.iteritems():
-            if isinstance(value,numpy.ndarray):
-                kwargs[key] = rpyc.utils.classic.deliver(self.connection,value)
+            kwargs[key] = self.deliver(value)
         return (args,kwargs)
     
     def __call__(self,*args,**kwargs):
-        if self.connection:
+        if self.connector.connection:
             args,kwargs = self.fixArgsAndKwargs(args,kwargs)
-        ans=self.obj(*args,**kwargs)
-        if 'numpy' in str(type(ans)):
-            return rpyc.utils.classic.obtain(ans)
-        elif isinstance(ans,rpyc.core.netref.BaseNetref):
-            return mdsNetref(self.connection,self.obj(*args,**kwargs))
-        else:
-            return ans
+        ans=self.obtain(self.obj(*args,**kwargs))
+        if isinstance(ans,rpyc.core.netref.BaseNetref):
+            ans = mdsNetref(self.connector,self.obj(*args,**kwargs))
+        return ans
 
 class mdsConnector(object):
     """The mdsConnector class enables the use of MDSplus objects over an SSH
@@ -68,12 +81,14 @@ is an example on its use:
     >>> d5=d4.data()               ##### d5 is a numpy array on local host
 """
 
-    def __init__(self, host=None,
+    def __init__(self,
+                 host=None,
                  user=None,
                  port=None,
                  keyfile=None,
                  password=None,
                  python_executable='python',
+                 ssh_opts=[],
                  hop=None,
                  hop_user=None,
                  hop_port=None,
@@ -89,11 +104,15 @@ is an example on its use:
             self.connection=None
         else:
             self.local=False
-            self.mach=SshMachine(host,user=user,port=port,keyfile=keyfile,password=password)
+            self.mach=SshMachine(host,user=user,port=port,keyfile=keyfile,password=password,ssh_opts=ssh_opts)
             self.server=DeployedServer(self.mach,python_executable=python_executable)
             self.connection=self.server.classic_connect()
             if hop is None:
                 self.mdsplus=self.connection.modules['MDSplus']
+                try:
+                    self.dill=self.connection.modules['dill']
+                except:
+                    self.dill=None
             else:
                 self.hop_connection=self.connection.modules['mdsconnector'].mdsConnector(hop,
                                                                                          user=hop_user,
@@ -105,7 +124,7 @@ is an example on its use:
 
     def __getattr__(self,name):
         if self.connection:
-                return mdsNetref(self.connection,self.mdsplus.__dict__[name])
+                return mdsNetref(self,self.mdsplus.__dict__[name])
         else:
             return self.mdsplus.__dict__[name]
     
