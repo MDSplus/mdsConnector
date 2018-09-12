@@ -45,7 +45,7 @@ class mdsNetref(object):
         for idx in range(len(l_args)):
             l_args[idx] = self.deliver(l_args[idx])
         args=tuple(l_args)
-        for key,value in kwargs.iteritems():
+        for key,value in kwargs.items():
             kwargs[key] = self.deliver(value)
         return (args,kwargs)
     
