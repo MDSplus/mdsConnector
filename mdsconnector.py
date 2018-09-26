@@ -1,5 +1,5 @@
 from rpyc.utils.zerodeploy import DeployedServer
-from plumbum import SshMachine
+from mds_ssh_machine import SshMachine
 import rpyc
 import dill
 
