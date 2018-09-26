@@ -1,0 +1,13 @@
+# python setup directory
+dist/
+*.egg-info
+
+# Emacs autosave files
+\#*#
+
+# vi autosave files
+*~
+
+# python compiled files
+*.pyc
+

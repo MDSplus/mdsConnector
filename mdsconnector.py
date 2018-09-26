@@ -1,5 +1,5 @@
 from rpyc.utils.zerodeploy import DeployedServer
-from plumbum import SshMachine
+from mds_ssh_machine import SshMachine
 import rpyc
 import dill
 
@@ -103,6 +103,10 @@ is an example on its use:
             self.mdsplus=MDSplus
             self.connection=None
         else:
+            if python_executable == 'python':
+              import sys
+              if sys.version_info[0] == 3:
+                python_executable='python3'
             self.local=False
             self.mach=SshMachine(host,user=user,port=port,keyfile=keyfile,password=password,ssh_opts=ssh_opts)
             self.server=DeployedServer(self.mach,python_executable=python_executable)
