@@ -1,11 +1,20 @@
 from plumbum.lib import _setdoc, IS_WIN32
-from mds_remote import BaseRemoteMachine
 from plumbum.machines.session import ShellSession
 from plumbum.machines.local import local
 from plumbum.path.local import LocalPath
 from plumbum.path.remote import RemotePath
 from plumbum.commands import ProcessExecutionError, shquote
 import warnings
+
+def _mimport(name, level=1):
+    try:
+        if not __package__:
+            return __import__(name, globals())
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+
+BaseRemoteMachine=_mimport('mds_remote').BaseRemoteMachine
 
 HAS_WIN32_OPENSSH = False
 if IS_WIN32:

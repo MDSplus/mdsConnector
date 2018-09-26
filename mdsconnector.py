@@ -1,7 +1,15 @@
 from rpyc.utils.zerodeploy import DeployedServer
-from mds_ssh_machine import SshMachine
 import rpyc
 import dill
+def _mimport(name, level=1):
+    try:
+        if not __package__:
+            return __import__(name, globals())
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+
+SshMachine=_mimport('mds_ssh_machine').SshMachine
 
 class mdsNetref(object):
     def __init__(self,connector,obj):
