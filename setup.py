@@ -23,6 +23,8 @@ setup(name = "mdsconnector",
     url = "http://www.mdsplus.org",
     py_modules = [
         'mdsconnector',
+        'mds_remote',
+        'mds_ssh_machine',
     ],
     scripts = [
     ],
