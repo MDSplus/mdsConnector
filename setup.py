@@ -11,7 +11,7 @@ if sys.version_info < (2, 5):
     sys.exit("requires python 2.5 and up")
 
 here = os.path.dirname(__file__)
-version_string='1.4'
+version_string='1.5'
 
 setup(name = "mdsconnector",
     version = version_string, 
