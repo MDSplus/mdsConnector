@@ -417,6 +417,7 @@ class BaseRemoteMachine(BaseMachine):
             f.flush()
             f.seek(0)
             fname=f.name
+            f.close()
             self.upload(fname, fn)
             os.remove(fname)
 
