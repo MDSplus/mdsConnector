@@ -18,7 +18,7 @@ class mdsNetref(object):
 
     def __getattr__(self,name):
         ans=self.obj.__getattr__(name)
-        if isinstance(ans,rpyc.core.netref.BaseNetref): 
+        if isinstance(ans,rpyc.core.netref.BaseNetref):
             return mdsNetref(self.connector,ans)
         else:
             return ans
@@ -28,7 +28,7 @@ class mdsNetref(object):
     def __str__(self):  return self.obj.__str__()
                 
     def deliver(self,arg):
-        if self.connector.connection and 'numpy' in str(type(arg)):
+        if self.connector.connection and ('numpy' in str(type(arg)) or 'type' in str(type(arg))):
             if self.connector.dill:
                 ans = self.connector.dill.loads(dill.dumps(arg))
             else:
@@ -38,7 +38,7 @@ class mdsNetref(object):
         return ans
 
     def obtain(self,arg):
-        if self.connector.connection and 'numpy' in str(type(arg)):
+        if self.connector.connection and ('numpy' in str(type(arg)) or 'type' in str(type(arg))):
             if self.connector.dill:
                 ans = dill.loads(self.connector.dill.dumps(arg))
             else:
