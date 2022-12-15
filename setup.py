@@ -27,7 +27,7 @@ setup(name = "mdsconnector",
     ],
     scripts = [
     ],
-    install_requires = ["rpyc","dill"],
+    install_requires = ["rpyc==4.1.5", "dill<=0.3.2", "plumbum<=1.6.9"],
     platforms = ["POSIX", "Windows"],
     use_2to3 = False,
     zip_safe = False,
