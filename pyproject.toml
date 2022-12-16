@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mdsconnector"
+version = "1.8.0"
+description = "Remote call to MDSplus objects"
+readme = "README.md"
+authors = [
+    { name = "MDSplus Core Development Team" }, 
+    { email = "mdsplus_dev@psfc.mit.edu" }, 
+]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Topic :: Internet",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Object Brokering",
+    "Topic :: System :: Clustering",
+    "Topic :: System :: Distributed Computing",
+    "Topic :: System :: Monitoring",
+    "Topic :: System :: Networking",
+    "Topic :: System :: Systems Administration",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+keywords = [
+    "MDSplus", 
+    "Data Managment", 
+    "Data Acquisition", 
+    "Magnetic Fusion Energy", 
+    "Remote Data Access"
+]
+dependencies = [
+    "rpyc==4.1.5",
+    "dill<=0.3.2",
+    "plumbum<=1.6.9",
+    "numpy"
+]
+requires-python = ">2.5"
+
+[project.optional-dependencies]
+dev = ["bumpver", "pip-tools", "pytest"]
+
+[project.urls]
+Homepage = "https://github.com/MDSplus/mdsConnector"
