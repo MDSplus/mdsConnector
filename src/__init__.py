@@ -1,4 +1,3 @@
-
 def _import(name, level=1):
     try:
         if not __package__:
@@ -6,4 +5,6 @@ def _import(name, level=1):
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
-mdsConnector=_import('mdsconnector').mdsConnector
+
+
+mdsConnector = _import("mdsconnector").mdsConnector

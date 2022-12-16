@@ -47,7 +47,7 @@ dependencies = [
 requires-python = ">2.5"
 
 [project.optional-dependencies]
-dev = ["bumpver", "pip-tools", "pytest"]
+test = ["mypy", "black", "isort", "flake8", "bumpver", "pip-tools", "pytest"]
 
 [project.urls]
 Homepage = "https://github.com/MDSplus/mdsConnector"
