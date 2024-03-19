@@ -4,13 +4,13 @@
 #
 #    pip-compile pyproject.toml
 #
-dill==0.3.2
+dill>=0.3.2
     # via mdsconnector (pyproject.toml)
-numpy==1.23.5
+numpy>=1.23.5
     # via mdsconnector (pyproject.toml)
-plumbum==1.6.9
+plumbum>=1.6.9
     # via
     #   mdsconnector (pyproject.toml)
     #   rpyc
-rpyc==4.1.5
+rpyc>6.0.0
     # via mdsconnector (pyproject.toml)
